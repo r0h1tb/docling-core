@@ -247,7 +247,7 @@ class LineBasedTokenChunker(BaseChunker):
                         break
 
                 # Add the taken part
-                current += "\n" + take
+                current += take
                 current_len += self.tokenizer.count_tokens(take)
 
                 # flush the current chunk (full)

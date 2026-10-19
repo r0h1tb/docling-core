@@ -189,6 +189,22 @@ def test_chunk_text_with_prefix_and_long_lines(default_tokenizer):
         assert token_count <= MAX_TOKENS
 
 
+@pytest.mark.parametrize("prefix", ["", "Header\n"])
+def test_chunk_text_split_line_adds_no_text(default_tokenizer, prefix):
+    """Splitting a line that is too long must not add newlines to the chunks."""
+    chunker = LineBasedTokenChunker(
+        tokenizer=default_tokenizer,
+        prefix=prefix,
+    )
+
+    lines = ["Short line.\n", "word " * MAX_TOKENS * 2 + "\n", "Tail.\n"]
+    chunks = chunker.chunk_text(lines)
+
+    assert len(chunks) > 2
+    assert all(chunk.startswith(prefix) for chunk in chunks)
+    assert "".join(chunk[len(prefix) :] for chunk in chunks) == "".join(lines)
+
+
 def test_chunk_document(default_tokenizer):
     """Test the chunk() method with a DoclingDocument."""
     # Create a simple DoclingDocument
